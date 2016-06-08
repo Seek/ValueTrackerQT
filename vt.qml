@@ -62,19 +62,28 @@ ApplicationWindow {
             id: contactDelegate
             Item {
                 width: 180; height: 40
-                Column {
-                    Text { text: '<b>Name:</b> ' + name }
-                    Text { text: '<b>Number:</b> ' + number }
-                }
+                CardBar {}
             }
         }
-        ListModel {id: contactModel}
         ListView {
+            id: myId
             anchors.fill: parent
-            model: contactModel
+            model: pythonList
             delegate: contactDelegate
             highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
             focus: true
+        }
+    }
+
+    TextField {
+        objectName: "autoComplete"
+        signal textModified(string text)
+        
+        anchors.centerIn: parent
+        inputMethodHints: Qt.ImhNoPredictiveText
+        onTextChanged: {
+            console.log("Text changed to:", text)
+            textModified(text)
         }
     }
 
