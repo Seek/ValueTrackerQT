@@ -1,6 +1,8 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.3
+import TrackedCards 1.0
+
 
 ApplicationWindow {
     title: "ValueTracker"
@@ -27,4 +29,53 @@ ApplicationWindow {
             MenuItem { text: "Paste" }
         }
     }
+
+    ColumnLayout {
+        width: 250
+        height: 600
+        anchors.horizontalCenter: parent.horizontalCenter
+        CardBar {id: bar; cardId: "AT_002"}
+    }
+    ColumnLayout {
+        Button {
+            text: "Forward"
+            onClicked: bar.state = "NORMAL_NONUM"
+        }
+        Button {
+            text: "Back"
+            onClicked: bar.state = "NORMAL_NUM"
+        }
+    }
+    TrackedCard {
+        objectName: "card"
+        onCardsChanged: console.log("We got", cards['dd'] )
+    }
+    Rectangle {
+        width: 180; height: 200
+        objectName: "myList"
+        
+        function append(newElement) {
+            contactModel.append(newElement)
+        }
+        
+        Component {
+            id: contactDelegate
+            Item {
+                width: 180; height: 40
+                Column {
+                    Text { text: '<b>Name:</b> ' + name }
+                    Text { text: '<b>Number:</b> ' + number }
+                }
+            }
+        }
+        ListModel {id: contactModel}
+        ListView {
+            anchors.fill: parent
+            model: contactModel
+            delegate: contactDelegate
+            highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+            focus: true
+        }
+    }
+
 }
