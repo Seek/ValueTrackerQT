@@ -145,10 +145,6 @@ class CardModel(QAbstractListModel):
 autoComplete = None
 session = None
 model = CardModel(session)
-
-
-class CardProvider:
-
     
 def onTextChanged(text):
     from sqlalchemy import and_, or_

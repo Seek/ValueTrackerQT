@@ -69,6 +69,25 @@ ApplicationWindow {
             }
         }
         ListView {
+
+            add: Transition {
+                NumberAnimation { property: "opacity"; from: 0; to: 1.0; duration: 200 }
+                NumberAnimation { property: "scale"; from: 0; to: 1.0; duration: 200 }
+                //NumberAnimation {properties: "x,y"; duration: 200}
+            }
+
+            MouseArea {
+                id: listArea
+                anchors.fill: parent
+                onClicked: myId.listClicked(mouse.x, mouse.y)
+            }
+
+            function listClicked(x, y) {
+                console.log("X: " + x + " Y: " + y)
+                console.log("Item Index <" + indexAt(x,y) + "> was selected")
+                currentIndex = indexAt(x,y)
+            }
+            
             spacing: 20
             id: myId
             anchors.fill: parent
