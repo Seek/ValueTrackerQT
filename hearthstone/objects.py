@@ -1,6 +1,6 @@
 import sqlalchemy
 import json
-from enums import CardClass, CardSet, CardType, Rarity
+from .enums import CardClass, CardSet, CardType, Rarity
 
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
@@ -116,10 +116,10 @@ if __name__ == '__main__':
         
         return cards_json
 
+    # cards_json = download_cards()
     with open('cards.json', 'r', encoding='utf-8') as f:
         cards_json = json.load(f)
 
-    pdb.set_trace()
     for card in cards_json:
         card2 = session.query(Card).filter_by(id=card['id']).first()
         if card2:

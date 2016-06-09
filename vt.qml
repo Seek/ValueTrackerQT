@@ -51,7 +51,7 @@ ApplicationWindow {
         onCardsChanged: console.log("We got", cards['dd'] )
     }
     Rectangle {
-        width: 180; height: 200
+        width: 300; height: 500
         objectName: "myList"
         
         function append(newElement) {
@@ -61,11 +61,15 @@ ApplicationWindow {
         Component {
             id: contactDelegate
             Item {
-                width: 180; height: 40
-                CardBar {}
+                width: 300; height: 60
+                Column {
+                    Text { text: 'Card Name: ' + name }
+                    Text { text: 'CardId: ' + cardId } 
+                }
             }
         }
         ListView {
+            spacing: 20
             id: myId
             anchors.fill: parent
             model: pythonList
