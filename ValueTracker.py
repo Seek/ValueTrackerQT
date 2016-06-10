@@ -120,7 +120,7 @@ class CardModel(QAbstractListModel):
         self.endRemoveRows()
 
     def data(self, index, role=QtCore.Qt.DisplayRole):
-        if index.isValid() is True:
+        if index.isValid() is True:        
             if role == QtCore.Qt.DisplayRole:
                 print('display role', self._cards[index.row()])
                 return QtCore.QVariant(self._cards[index.row()])

@@ -10,6 +10,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext import mutable
 import pdb
 import datetime
+from bisect import insort
 class JsonEncodedDict(sqlalchemy.TypeDecorator):
   """Enables JSON storage by encoding and decoding on the fly."""
   impl = sqlalchemy.String
@@ -41,6 +42,19 @@ class Card(Base):
         return "<Card(name='%s', id='%s')>" % (
                     self.name, self.id)
 
+    def __lt__(self, other):
+        if self.cost == other.cost:
+            if self.type == other.type:
+                if self.name == other.name:
+                    return False
+                else:
+                    return self.name < other.name
+            else:
+                return self.type > other.type
+        else:
+            return self.cost < other.cost
+
+
 
 class Deck(Base):
     __tablename__ = 'decks'
@@ -54,6 +68,63 @@ class Deck(Base):
         return "<Deck(name='%s', id='%s')>" % (
                     self.name, self.id)
 
+    def add_card(self, card):
+        if card in self.cards:
+            if self.cards.count(card) >= 2 or card.rarity == Rarity.LEGENDARY:
+                return
+            else:
+                insort(self.cards, card)
+        else:
+            insort(self.cards, card)
+
+    def remove_card(self, card):
+        if card.id in self.cards:
+            num_cards = self.cards[card.id]['ndeck']
+            if num_cards < 2 or card.rarity == Rarity.LEGENDARY:
+                del self.cards[card.id]
+            else:
+                self.cards[card.id]['ndeck'] -=1
+
+class TrackedDeck:
+    def __init__(self, base_deck):
+        self.cards = base_deck.cards.copy()
+
+    def add_card(self, card):
+        if card.id in self.cards:
+            num_cards = self.cards[card.id]['ndeck']
+            if num_cards >= 2 or card.rarity == Rarity.LEGENDARY:
+                return
+            else:
+                self.cards[card.id]['ndeck'] +=1
+        else:
+            self.cards[card.id] = {'ndeck': 1,
+                                'nhand' : 0,
+                                'nplayed': 0 }
+
+    def remove_card(self, card):
+        if card.id in self.cards:
+            num_cards = self.cards[card.id]['ndeck']
+            if num_cards < 2 or card.rarity == Rarity.LEGENDARY:
+                del self.cards[card.id]
+            else:
+                self.cards[card.id]['ndeck'] -=1
+
+    def card_drawn(self, card):
+        if card.id in self.cards:
+            self.cards[card.id]['nhand'] += 1
+            self.cards[card.id]['ndeck']  -= 1
+
+    def card_played(self, card, where='HAND'):
+        if card.id in self.cards:
+            if where == 'HAND':
+                self.cards[card.id]['nhand'] -= 1
+            elif where == 'DECK':
+                self.cards[card.id]['ndeck'] -= 1
+
+    def card_shuffled(self, card):
+        if card in self.cards:
+            self.cards[card.id]['nhand'] -= 1
+            self.cards[card.id]['ndeck']  += 1
 
 class Player(Base):
     __tablename__ = 'players'
